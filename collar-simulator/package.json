@@ -1,0 +1,17 @@
+{
+    "name": "collar-simulator",
+    "version": "1.0.0",
+    "description": "Simulates data generated from animal collars and transmits data to Node-RED over MQTT",
+    "license": "MIT",
+    "author": "Charlie Horn",
+    "type": "module",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node src/index.js",
+        "simulate-gps": "node src/simulateGps.js"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "mqtt": "^5.10.0"
+    }
+}
