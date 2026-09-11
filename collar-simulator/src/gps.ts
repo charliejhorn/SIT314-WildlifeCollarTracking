@@ -1,6 +1,7 @@
 import { randomFloat } from './utils.js';
+import type { Behaviour, CollarState, GpsReading } from './types.js';
 
-export function updateGps(collar, behavior) {
+export function updateGps(collar: CollarState, behavior: Behaviour): GpsReading {
     // Approx meters/minute at motionLevel = 1. Calibrated for a grazing
     // mammal (e.g. cattle/deer-scale animal), not a small rodent or a horse.
     const activityScale = {
@@ -15,7 +16,7 @@ export function updateGps(collar, behavior) {
     // How far (meters) the animal can roam before the pull home gets strong.
     // Override per-animal via collar.home.rangeRadius if you have real
     // home-range data; this default is a reasonable mid-size-mammal guess.
-    const homeRangeRadius = collar.home.rangeRadius ?? 6000;
+    const homeRangeRadius = collar.home.rangeRadius ?? 15000;
 
     const latDiff = homeLat - collar.pos.lat;
     const lonDiff = homeLon - collar.pos.lon;
@@ -115,7 +116,7 @@ export function updateGps(collar, behavior) {
     };
 }
 
-function lerpAngle(a, b, t) {
+function lerpAngle(a: number, b: number, t: number): number {
     let diff = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
     return a + diff * t;
 }

@@ -1,6 +1,7 @@
 import { randomInt } from './utils.js';
+import type { CollarConfig, CollarState } from './types.js';
 
-export function createCollarStates(collarsConfig) {
+export function createCollarStates(collarsConfig: CollarConfig[]): CollarState[] {
     return collarsConfig.map((item) => ({
         collar_id: item.collar_id,
         home: { ...item.home },

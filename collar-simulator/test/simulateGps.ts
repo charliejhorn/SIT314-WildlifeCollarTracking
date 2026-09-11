@@ -5,8 +5,10 @@ import { updateGps } from '../src/gps.js'
 import fs from "fs";
 import path from "path";
 
+type Coordinate = [number, number];
+
 const collars = createCollarStates(collarsConfig)
-let positions = []
+const positions: Coordinate[] = []
 
 for(let i = 0; i < 10000; i++)
 {
@@ -19,7 +21,7 @@ for(let i = 0; i < 10000; i++)
     }
 }
 
-export function writePositionsToCSV(positions, filename = "locations.csv") {
+export function writePositionsToCSV(positions: Coordinate[], filename = "locations.csv"): void {
   const filePath = path.resolve(filename);
   const rows = positions.map(([lat, lon]) => `${lat},${lon}`);
   const csv = `Latitude,Longitude\n${rows.join("\n")}\n`;

@@ -1,6 +1,7 @@
 import { clamp, randomFloat } from './utils.js';
+import type { AccelerometerData, AccelerometerSample, Behaviour, CollarState } from './types.js';
 
-export function generateAccelerometerData(collar, behavior) {
+export function generateAccelerometerData(_collar: CollarState, behavior: Behaviour): AccelerometerData {
     const sampleCount = behavior.activity === 'running' ? 16 : behavior.activity === 'walking' ? 12 : 8;
     const amplitude = {
         resting: { x: 0.2, y: 0.2, z: 0.15 },
@@ -16,8 +17,8 @@ export function generateAccelerometerData(collar, behavior) {
         samples.push({ x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), z: Number(z.toFixed(3)) });
     }
 
-    const axes = ['x', 'y', 'z'];
-    const result = {};
+    const axes: (keyof AccelerometerSample)[] = ['x', 'y', 'z'];
+    const result = {} as Pick<AccelerometerData, 'x' | 'y' | 'z'>;
 
     for (const axis of axes) {
         const values = samples.map((sample) => sample[axis]);

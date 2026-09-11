@@ -1,19 +1,21 @@
 import mqtt from 'mqtt';
 import 'dotenv/config';
+import type { MqttClient } from 'mqtt';
+import type { Payload } from './types.js';
 
 const brokerUrl = process.env.MQTT_BROKER_URL || 'broker.hivemq.com';
 const brokerPort = Number(process.env.MQTT_PORT || 1883);
 const topic = process.env.MQTT_TOPIC || 'betula/collar-simulator/data';
 
-let client = null;
-let connectPromise = null;
+let client: MqttClient | null = null;
+let connectPromise: Promise<MqttClient> | null = null;
 
-function getClient() {
+function getClient(): Promise<MqttClient> {
     if (client) {
         return Promise.resolve(client);
     }
 
-    client = mqtt.connect(`mqtts://${brokerUrl}:${brokerPort}`, {
+    const connectedClient = mqtt.connect(`mqtts://${brokerUrl}:${brokerPort}`, {
         clientId: process.env.MQTT_CLIENT_ID || `collar-sim-${Date.now()}`,
         username: process.env.MQTT_USERNAME,
         password: process.env.MQTT_PASSWORD,
@@ -21,27 +23,28 @@ function getClient() {
         clean: true,
         rejectUnauthorized: true
     });
+    client = connectedClient;
 
     connectPromise = new Promise((resolve, reject) => {
         const onConnect = () => {
-            client.removeListener('error', onError);
-            resolve(client);
+            connectedClient.removeListener('error', onError);
+            resolve(connectedClient);
         };
 
-        const onError = (error) => {
-            client.removeListener('connect', onConnect);
+        const onError = (error: Error) => {
+            connectedClient.removeListener('connect', onConnect);
             console.error("Error connecting to MQTT client.")
             reject(error);
         };
 
-        client.once('connect', onConnect);
-        client.once('error', onError);
+        connectedClient.once('connect', onConnect);
+        connectedClient.once('error', onError);
     });
 
     return connectPromise;
 }
 
-export async function publishMessage(payload) {
+export async function publishMessage(payload: Payload | string): Promise<void> {
     const mqttClient = await getClient();
 
     return new Promise((resolve, reject) => {

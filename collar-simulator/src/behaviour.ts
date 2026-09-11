@@ -1,7 +1,8 @@
 import { clamp, randomFloat, randomInt } from './utils.js';
+import type { Activity, Behaviour, CollarState } from './types.js';
 
-export function chooseBehavior(collar) {
-    const activityMap = {
+export function chooseBehavior(collar: CollarState): Behaviour {
+    const activityMap: Record<Activity, { next: Activity[]; level: number }> = {
         resting: { next: ['resting', 'walking'], level: 0.15 },
         walking: { next: ['resting', 'walking', 'running'], level: 0.75 },
         running: { next: ['walking', 'running'], level: 1.25 }

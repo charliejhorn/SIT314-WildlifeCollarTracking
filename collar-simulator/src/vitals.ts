@@ -1,6 +1,7 @@
 import { clamp, randomFloat } from './utils.js';
+import type { Behaviour, CollarState, Vitals } from './types.js';
 
-export function generateVitals(collar, behavior) {
+export function generateVitals(collar: CollarState, behavior: Behaviour): Vitals {
     const activityBoost = {
         resting: 0,
         walking: 8,
