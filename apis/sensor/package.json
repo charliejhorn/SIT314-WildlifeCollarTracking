@@ -1,0 +1,21 @@
+{
+    "name": "sensor-api",
+    "version": "1.0.0",
+    "description": "HTTP microservice that stores collar sensor data in a database",
+    "license": "MIT",
+    "author": "Charlie Horn",
+    "type": "module",
+    "main": "server.js",
+    "scripts": {
+        "dev": "nodemon server.js"
+    },
+    "dependencies": {
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "mongodb": "^7.6.0",
+        "snappy": "^7.4.3"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.14"
+    }
+}
