@@ -1,7 +1,7 @@
-const express = require('express');
-const logger = require('./middleware/logger');
-const errorHandler = require('./middleware/errorHandler');
-const apiRoutes = require('./routes');
+import express from 'express';
+import logger from './middleware/logger.js';
+import errorHandler from './middleware/errorHandler.js';
+import apiRoutes from './routes/index.js';
 
 const app = express();
 
@@ -25,4 +25,4 @@ app.use((req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
