@@ -22,11 +22,11 @@ for(let i = 0; i < 10000; i++)
 }
 
 export function writePositionsToCSV(positions: Coordinate[], filename = "locations.csv"): void {
-  const filePath = path.resolve(filename);
-  const rows = positions.map(([lat, lon]) => `${lat},${lon}`);
-  const csv = `Latitude,Longitude\n${rows.join("\n")}\n`;
+    const filePath = path.resolve(filename);
+    const rows = positions.map(([lat, lon]) => `${lat},${lon}`);
+    const csv = `Latitude,Longitude\n${rows.join("\n")}\n`;
 
-  fs.writeFileSync(filePath, csv, "utf8");
+    fs.writeFileSync(filePath, csv, "utf8");
 }
 
 writePositionsToCSV(positions)

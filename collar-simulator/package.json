@@ -9,7 +9,8 @@
     "scripts": {
         "start": "tsx src/index.ts",
         "simulate-gps": "tsx test/simulateGps.ts",
-        "build": "tsc"
+        "build": "tsc",
+        "create-test-payload": "tsx test/createTestPayload.ts"
     },
     "devDependencies": {
         "@types/node": "^22.10.2",
