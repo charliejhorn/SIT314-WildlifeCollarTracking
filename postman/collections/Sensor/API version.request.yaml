@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://{{api-sensor-host}}:{{api-sensor-port}}/api/version
+method: GET
+order: 1789172963670

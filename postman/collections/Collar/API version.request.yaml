@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://{{api-animal-host}}:{{api-animal-port}}/api/version
+method: GET
+order: 1789195425383

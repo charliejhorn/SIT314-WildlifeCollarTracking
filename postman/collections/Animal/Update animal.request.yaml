@@ -1,0 +1,10 @@
+$kind: http-request
+url: http://{{api-animal-host}}:{{api-animal-port}}/api/animals/6aa4f910fa7cb3024b5d4ed1
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+        "name": "Mufasa"
+    }
+order: 4330898491277728

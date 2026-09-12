@@ -1,0 +1,12 @@
+$kind: http-request
+url: http://{{api-animal-host}}:{{api-animal-port}}/api/animals
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "Simba",
+        "species": "lion",
+        "birth_date": 1789196319 
+    }
+order: 3643714586053133

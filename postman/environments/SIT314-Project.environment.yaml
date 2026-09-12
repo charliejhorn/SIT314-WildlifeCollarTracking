@@ -1,2 +1,14 @@
 name: SIT314-Project
-values: []
+values:
+  - key: api-sensor-host
+    value: ''
+  - key: api-sensor-port
+    value: ''
+  - key: api-animal-host
+    value: ''
+  - key: api-animal-port
+    value: ''
+  - key: api-collar-host
+    value: ''
+  - key: api-collar-port
+    value: ''

@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://{{api-animal-host}}:{{api-animal-port}}/api/animals/
+method: GET
+order: 4315661549376648
