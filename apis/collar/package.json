@@ -1,0 +1,27 @@
+{
+    "name": "collar-api",
+    "version": "1.0.0",
+    "description": "HTTP microservice that stores collar records in a database",
+    "license": "MIT",
+    "author": "Charlie Horn",
+    "type": "module",
+    "main": "dist/server.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsx watch server.ts",
+        "start": "node dist/server.js"
+    },
+    "dependencies": {
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "mongodb": "^7.6.0",
+        "snappy": "^7.4.3"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.10.1",
+        "nodemon": "^3.1.14",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3"
+    }
+}
