@@ -1,8 +1,9 @@
-import dotenv from 'dotenv';
-dotenv.config({
-  path: './.env',
-  debug: true
-});
+// import dotenv from 'dotenv';
+// dotenv.config({
+//     path: './.env',
+//     debug: true
+// });
+import 'dotenv/config'
 
 import app from './src/app.js';
 
