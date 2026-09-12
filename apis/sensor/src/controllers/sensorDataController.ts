@@ -64,10 +64,17 @@ const sensorDataController = {
         }
     },
 
-    async getSensorData(_req: Request, res: Response, next: NextFunction) {
+    async getSensorDataByCollar(_req: Request, res: Response, next: NextFunction) {
         try {
-            const data = await sensorDataModel.findAll();
-            res.status(200).json(data);
+            const { collar_id } = _req.query;
+
+            if (typeof collar_id !== 'string' || !collar_id) {
+                return res.status(400).json({ error: 'collar_id is required' });
+            }
+
+            const data = await sensorDataModel.findByCollarId(collar_id);
+            
+            return res.status(200).json(data);
         } catch (error) {
             next(error);
         }

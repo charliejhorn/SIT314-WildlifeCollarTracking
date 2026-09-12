@@ -14,8 +14,10 @@ const sensorDataModel = {
         const result = await sensorDataColl.insertOne(sensorData);
         return result.insertedId;
     },
-    async findAll(): Promise<SensorData[]> {
-        return sensorDataColl.find<SensorData>({}).toArray();
+    async findByCollarId(collar_id: string): Promise<SensorData[]> {
+        return await sensorDataColl
+            .find<SensorData>({ collar_id: parseInt(collar_id) })
+            .toArray();
     },
 };
 
