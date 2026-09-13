@@ -1,0 +1,1 @@
+router: Router — binds zone CRUD + POST /collars/:collar_id/zone, GET /collars/:collar_id/zone to zoneController

@@ -1,0 +1,1 @@
+distanceMeters(a: {lat,lon}, b: {lat,lon}): number (haversine — shared by movementRule too, consider hoisting to a utils/geo.ts if duplicated)
