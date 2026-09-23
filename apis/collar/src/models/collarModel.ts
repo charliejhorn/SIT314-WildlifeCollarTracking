@@ -4,7 +4,7 @@ import { collarColl } from '../config/database.js';
 
 export interface Collar {
     id?: number,
-    animal_id?: number;
+    animal_id: number;
     fitted_date?: number;
 }
 

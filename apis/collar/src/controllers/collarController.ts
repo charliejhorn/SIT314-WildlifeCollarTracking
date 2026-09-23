@@ -5,10 +5,18 @@ const collarController = {
     async createCollar(req: Request, res: Response, next: NextFunction) {
         try {
             // validation happens here
-            const { fitted_date } = req.body;
+            const { fitted_date, animal_id } = req.body;
 
-            const collar: Collar = {};
-            if (fitted_date !== undefined) collar.fitted_date = fitted_date;
+            if (animal_id === undefined) {
+                return res.status(400).json({ error: 'animal_id is required' });
+            }
+
+            const collar: Collar = {animal_id};
+
+            // fitted_date is not required on creation
+            if(fitted_date !== undefined) {
+                collar.fitted_date = fitted_date;
+            }
 
             // data access happens in the model
             const insertedId = await collarModel.create(collar);
