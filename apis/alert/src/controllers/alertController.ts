@@ -1,19 +1,29 @@
 import type { NextFunction, Request, Response } from 'express';
 import alertModel, { type Alert, type AlertQuery } from '../models/alertModel.js';
-import { SensorData } from '../types.js';
+import { SensorData, EnrichedSensorData } from '../types.js';
+import runRules from '../rules/index.js';
+import { processRuleResults } from '../services/alertService.js';
 
 
 const alertController = {
     async ingestReading(req: Request, res: Response, next: NextFunction) {
         try {
-            const sensorData: SensorData;
-            const { ...(keyof typeof SensorData) } = req.query;
+            // console.log('Received request body:', req.body);
+            const sensorData: EnrichedSensorData = req.body as unknown as EnrichedSensorData;
+
+            // console.log('Received sensor data:', sensorData);
+            // return res.status(200).json({ message: 'Sensor data received successfully' });
+
+            const rulesResults = await runRules(sensorData);
+            processRuleResults(rulesResults, sensorData.collar_id, sensorData.species);
+            return res.status(200).json({ message: 'Sensor data processed successfully', rulesResults });
+
         } catch (error) {
             next(error);
         }
     },   
     
-    async listAlerts(req: Request, res: Response, next: NextFunction) {
+    async listAlertsByCollar(req: Request, res: Response, next: NextFunction) {
         try {
             const { collar_id, resolved } = req.query;
             const query: AlertQuery = {};
@@ -41,7 +51,19 @@ const alertController = {
     },
     
     async getAlertById(req: Request<{ alertId: string }>, res: Response, next: NextFunction) {
+        try {
+            const { alertId } = req.params;
 
+            if (!alertId || typeof alertId !== 'string') {
+                return res.status(400).json({ error: 'id is required' });
+            }
+
+            const data = await alertModel.findAlertById(alertId);
+            
+            return res.status(200).json(data);
+        } catch (error) {
+            next(error);
+        }
     }
     
     // async createAlert(req: Request, res: Response, next: NextFunction) {

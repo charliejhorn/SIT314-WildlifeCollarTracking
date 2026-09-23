@@ -26,8 +26,8 @@ const alertModel = {
         return result.insertedId;
     },
 
-    async find(query: AlertQuery = {}): Promise<Document[]> {
-        const result = await alertColl.find(query).toArray();
+    async findAlertById(id: string): Promise<Document | null> {
+        const result = await alertColl.find({ _id: new ObjectId(id) });
         return result;
     },
 
@@ -44,6 +44,11 @@ const alertModel = {
         );
         return result;
     },
+
+    async find(query: AlertQuery): Promise<Document[]> {
+        const result = await alertColl.find(query).toArray();
+        return result;
+    }
 };
 
 export default alertModel;

@@ -1,13 +1,13 @@
 export interface SensorData {
     posix_time: number;
-    collar_id: number;
+    collar_id: string;
     gps: Record<string, unknown>;
     vitals: Record<string, unknown>;
     accelerometer: Record<string, unknown>;
 }
 
 export interface EnrichedSensorData extends SensorData {
-    species: string
+    species: string;
 } 
 
 export interface RuleResult {

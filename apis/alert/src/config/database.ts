@@ -23,3 +23,5 @@ void testConnection();
 
 const db = client.db('sit314-project');
 export const alertColl = db.collection('alerts');
+export const geofenceColl = db.collection('geofences');
+export const collarGeofenceAssignmentColl = db.collection('collar_geofence_assignments');

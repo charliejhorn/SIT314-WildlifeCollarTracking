@@ -1,2 +1,2 @@
-connectMqtt(): void
-publishAlertEvent(alert: Alert, status: 'triggered' | 'repeated' | 'resolved'): void
+// connectMqtt(): void
+// publishAlertEvent(alert: Alert, status: 'triggered' | 'repeated' | 'resolved'): void
