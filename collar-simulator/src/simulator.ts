@@ -1,5 +1,5 @@
-import collarsConfig from '../config/collars.json' with { type: 'json' };
-import { createCollarStates } from './collarState.js';
+import { connectDatabase, getCollarIds, getCollarStates, saveCollarState } from './config/database.js';
+import { createInitialCollarState } from './collarState.js';
 import { chooseBehavior } from './behaviour.js';
 import { updateGps } from './gps.js';
 import { generateAccelerometerData } from './accelerometer.js';
@@ -9,7 +9,14 @@ import { publishMessage } from './mqttClient.js';
 import type { CollarState } from './types.js';
 
 export async function startSimulator() {
-    const collars = createCollarStates(collarsConfig);
+    await connectDatabase();
+    const collarIds = await getCollarIds();
+    console.log("Found collar IDs:", collarIds);
+    const storedStates = await getCollarStates(collarIds);
+    const statesByCollarId = new Map(storedStates.map((state) => [state.collar_id, state]));
+    const collars = collarIds.map((collarId) => statesByCollarId.get(collarId) ?? createInitialCollarState(collarId));
+
+    await Promise.all(collars.map((collar) => saveCollarState(collar)));
 
     console.log(`starting ${collars.length} collar simulation(s)`);
     for(const collar of collars)
@@ -40,6 +47,7 @@ export async function startSimulator() {
         }
 
         collar.nextSendAt = Date.now() + 300_000; // 5 min
+        await saveCollarState(collar);
         scheduleNextSend(collar);
         }, delay);
     }
