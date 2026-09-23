@@ -1,4 +1,4 @@
-import collarsConfig from '../config/collars2.json' with { type: 'json' };
+import collarsConfig from '../config/collars.json' with { type: 'json' };
 import { createCollarStates } from './collarState.js';
 import { chooseBehavior } from './behaviour.js';
 import { updateGps } from './gps.js';
@@ -7,45 +7,6 @@ import { generateVitals } from './vitals.js';
 import { buildPayload } from './payload.js';
 import { publishMessage } from './mqttClient.js';
 import type { CollarState } from './types.js';
-
-// export async function startSimulator() {
-//     const collars = createCollarStates(collarsConfig);
-//     console.log(`starting ${collars.length} collar simulation(s)`);
-//     for(const collar of collars)
-//     {
-//         console.log(`Collar ${collar.collar_id} next send time is ${(new Date(collar.nextSendAt)).toISOString()}`)
-//     }
-
-//     const tick = async () => {
-//         const now = Date.now();
-
-//         for (const collar of collars) {
-//             if (now < collar.nextSendAt) {
-//                 continue;
-//             }
-
-//             const behavior = chooseBehavior(collar);
-//             const gps = updateGps(collar, behavior);
-//             const accelerometer = generateAccelerometerData(collar, behavior);
-//             const vitals = generateVitals(collar, behavior);
-//             const payload = buildPayload(collar, gps, vitals, accelerometer);
-
-//             try {
-//                 await publishMessage(payload);
-//                 console.log(`published collar ${collar.collar_id} to MQTT`);
-//             } catch (error) {
-//                 console.error(`failed to publish collar ${collar.collar_id}:`, error.message);
-//             }
-
-//             collar.nextSendAt = Date.now() + 300_000;
-//         }
-//     };
-
-//     await tick();
-//     setInterval(() => {
-//         void tick();
-//     }, 5_000);
-// }
 
 export async function startSimulator() {
     const collars = createCollarStates(collarsConfig);

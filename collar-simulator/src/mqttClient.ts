@@ -28,6 +28,7 @@ function getClient(): Promise<MqttClient> {
     connectPromise = new Promise((resolve, reject) => {
         const onConnect = () => {
             connectedClient.removeListener('error', onError);
+            console.log(`Connected to MQTT broker at ${brokerUrl}:${brokerPort}`);
             resolve(connectedClient);
         };
 
@@ -49,6 +50,26 @@ export async function publishMessage(payload: Payload | string): Promise<void> {
 
     return new Promise((resolve, reject) => {
         mqttClient.publish(topic, JSON.stringify(payload), { qos: 0, retain: false }, (error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+export async function closeMqttClient(): Promise<void> {
+    if (!client) {
+        return;
+    }
+
+    const mqttClient = client;
+    client = null;
+    connectPromise = null;
+
+    await new Promise<void>((resolve, reject) => {
+        mqttClient.end(false, (error?: Error) => {
             if (error) {
                 reject(error);
                 return;

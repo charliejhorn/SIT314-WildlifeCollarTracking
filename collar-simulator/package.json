@@ -10,7 +10,8 @@
         "start": "tsx src/index.ts",
         "simulate-gps": "tsx test/simulateGps.ts",
         "build": "tsc",
-        "create-test-payload": "tsx test/createTestPayload.ts"
+        "create-test-payload": "tsx test/createTestPayload.ts",
+        "send-one-payload": "tsx test/sendOnePayload.ts"
     },
     "devDependencies": {
         "@types/node": "^22.10.2",

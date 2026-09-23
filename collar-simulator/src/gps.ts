@@ -1,6 +1,9 @@
 import { randomFloat } from './utils.js';
 import type { Behaviour, CollarState, GpsReading } from './types.js';
 
+const RANGE = 15000;
+const PULL_COEFFICIENT = 0.03;
+
 export function updateGps(collar: CollarState, behavior: Behaviour): GpsReading {
     // Approx meters/minute at motionLevel = 1. Calibrated for a grazing
     // mammal (e.g. cattle/deer-scale animal), not a small rodent or a horse.
@@ -16,7 +19,7 @@ export function updateGps(collar: CollarState, behavior: Behaviour): GpsReading 
     // How far (meters) the animal can roam before the pull home gets strong.
     // Override per-animal via collar.home.rangeRadius if you have real
     // home-range data; this default is a reasonable mid-size-mammal guess.
-    const homeRangeRadius = collar.home.rangeRadius ?? 15000;
+    const homeRangeRadius = collar.home.rangeRadius ?? RANGE;
 
     const latDiff = homeLat - collar.pos.lat;
     const lonDiff = homeLon - collar.pos.lon;
@@ -32,7 +35,7 @@ export function updateGps(collar: CollarState, behavior: Behaviour): GpsReading 
     // Stronger pull the farther outside its normal range it gets; squared
     // easing keeps the pull negligible near the center and sharp near/past
     // the boundary, rather than a straight linear ramp.
-    const pullStrength = 0.03 * Math.min(distanceM / homeRangeRadius, 1) ** 2;
+    const pullStrength = PULL_COEFFICIENT * Math.min(distanceM / homeRangeRadius, 1) ** 2;
 
     const bearingToHome = Math.atan2(latDiffM, lonDiffM);
 

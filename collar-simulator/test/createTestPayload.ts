@@ -1,4 +1,4 @@
-import collarsConfig from '../config/collars2.json' with { type: 'json' };
+import collarsConfig from '../config/collars.json' with { type: 'json' };
 import { createCollarStates } from '../src/collarState.js';
 import { chooseBehavior } from '../src/behaviour.js';
 import { updateGps } from '../src/gps.js';
