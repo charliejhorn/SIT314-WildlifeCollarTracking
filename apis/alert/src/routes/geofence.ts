@@ -3,12 +3,12 @@ import geofenceController from '../controllers/geofenceController.js';
 
 const router = express.Router();
 
-router.post('/', geofenceController.createZone);
-router.get('/', geofenceController.listZones);
-router.get('/collars/:collar_id/zone', geofenceController.getZoneForCollar);
-router.post('/collars/:collar_id/zone', geofenceController.assignCollarToZone);
-router.get('/:zoneId', geofenceController.getZoneById);
-router.put('/:zoneId', geofenceController.updateZone);
-router.delete('/:zoneId', geofenceController.deleteZone);
+router.post('/', geofenceController.createGeofence);
+router.get('/', geofenceController.listGeofences);
+router.get('/collars/:collar_id/geofence', geofenceController.getGeofenceForCollar);
+router.post('/collars/:collar_id/geofence', geofenceController.assignCollarToGeofence);
+router.get('/:geofenceId', geofenceController.getGeofenceById);
+router.put('/:geofenceId', geofenceController.updateGeofence);
+router.delete('/:geofenceId', geofenceController.deleteGeofence);
 
 export default router;

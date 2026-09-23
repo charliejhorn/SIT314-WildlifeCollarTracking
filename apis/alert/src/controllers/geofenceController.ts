@@ -14,9 +14,9 @@ function isValidBoundary(boundary: unknown): boundary is Geofence['boundary'] {
 		&& candidate.radius_m > 0;
 }
 
-function getId(req: Request<{ zoneId: string }>): string | null {
-	const { zoneId } = req.params;
-	return typeof zoneId === 'string' && zoneId.length > 0 ? zoneId : null;
+function getId(req: Request<{ geofenceId: string }>): string | null {
+	const { geofenceId } = req.params;
+	return typeof geofenceId === 'string' && geofenceId.length > 0 ? geofenceId : null;
 }
 
 function getCollarId(req: Request<{ collar_id: string }>): string | null {
@@ -25,7 +25,7 @@ function getCollarId(req: Request<{ collar_id: string }>): string | null {
 }
 
 const geofenceController = {
-	async createZone(req: Request, res: Response, next: NextFunction) {
+	async createGeofence(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { name, boundary } = req.body as Partial<Geofence>;
 			if (typeof name !== 'string' || name.trim() === '' || !isValidBoundary(boundary)) {
@@ -40,7 +40,7 @@ const geofenceController = {
 		}
 	},
 
-	async listZones(_req: Request, res: Response, next: NextFunction) {
+	async listGeofences(_req: Request, res: Response, next: NextFunction) {
 		try {
 			return res.status(200).json(await geofenceModel.findAll());
 		} catch (error) {
@@ -48,10 +48,10 @@ const geofenceController = {
 		}
 	},
 
-	async getZoneById(req: Request<{ zoneId: string }>, res: Response, next: NextFunction) {
+	async getGeofenceById(req: Request<{ geofenceId: string }>, res: Response, next: NextFunction) {
 		try {
 			const id = getId(req);
-			if (!id) return res.status(400).json({ error: 'zoneId is required' });
+			if (!id) return res.status(400).json({ error: 'geofenceId is required' });
 			const geofence = await geofenceModel.findGeofenceById(id);
 			if (!geofence) return res.status(404).json({ error: 'geofence not found' });
 			return res.status(200).json(geofence);
@@ -60,10 +60,10 @@ const geofenceController = {
 		}
 	},
 
-	async updateZone(req: Request<{ zoneId: string }>, res: Response, next: NextFunction) {
+	async updateGeofence(req: Request<{ geofenceId: string }>, res: Response, next: NextFunction) {
 		try {
 			const id = getId(req);
-			if (!id) return res.status(400).json({ error: 'zoneId is required' });
+			if (!id) return res.status(400).json({ error: 'geofenceId is required' });
 			const { name, boundary } = req.body as Partial<Geofence>;
 			const updates: Partial<Geofence> = {};
 			if (name !== undefined) {
@@ -90,10 +90,10 @@ const geofenceController = {
 		}
 	},
 
-	async deleteZone(req: Request<{ zoneId: string }>, res: Response, next: NextFunction) {
+	async deleteGeofence(req: Request<{ geofenceId: string }>, res: Response, next: NextFunction) {
 		try {
 			const id = getId(req);
-			if (!id) return res.status(400).json({ error: 'zoneId is required' });
+			if (!id) return res.status(400).json({ error: 'geofenceId is required' });
 			const existing = await geofenceModel.findGeofenceById(id);
 			if (!existing) return res.status(404).json({ error: 'geofence not found' });
 			await geofenceModel.delete(id);
@@ -103,7 +103,7 @@ const geofenceController = {
 		}
 	},
 
-	async assignCollarToZone(req: Request<{ collar_id: string }>, res: Response, next: NextFunction) {
+	async assignCollarToGeofence(req: Request<{ collar_id: string }>, res: Response, next: NextFunction) {
 		try {
 			const collarId = getCollarId(req);
 			const { geofence_id } = req.body as { geofence_id?: unknown };
@@ -124,7 +124,7 @@ const geofenceController = {
 		}
 	},
 
-	async getZoneForCollar(req: Request<{ collar_id: string }>, res: Response, next: NextFunction) {
+	async getGeofenceForCollar(req: Request<{ collar_id: string }>, res: Response, next: NextFunction) {
 		try {
 			const collarId = getCollarId(req);
 			if (!collarId) return res.status(400).json({ error: 'collar_id must be a positive integer' });
