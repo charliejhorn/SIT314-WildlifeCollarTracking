@@ -35,6 +35,18 @@ const animalModel = {
         );
         return result;
     },
+
+    async findByCollarId(collar_id: string): Promise<Document | null> {
+        const query = { collar_id: collar_id };
+        const result = await animalColl.findOne(query);
+        return result;
+    },
+
+    async findSpeciesOfCollar(collar_id: string): Promise<string | null> {
+        const query = { collar_id: collar_id };
+        const result = await animalColl.findOne(query, { projection: { species: 1 } });
+        return result ? result.species : null;
+    }
 };
 
 export default animalModel;

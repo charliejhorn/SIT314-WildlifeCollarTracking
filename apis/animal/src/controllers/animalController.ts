@@ -59,6 +59,26 @@ const animalController = {
         
         const result = await animalModel.update(animalId, updates);
         res.status(200).json(result);
+    },
+
+    async getSpeciesOfCollar(req: Request<{ collarId: string }>, res: Response, next: NextFunction) {
+        try {
+            const { collarId } = req.params;
+
+            if (typeof collarId !== 'string' || !collarId) {
+                return res.status(400).json({ error: 'collar_id is required' });
+            }
+
+            const data = await animalModel.findSpeciesOfCollar(collarId);
+            
+            if (!data) {
+                return res.status(404).json({ error: 'No Animal with collar_id ' + collarId + ' found' });
+            }
+
+            return res.status(200).json(data);
+        } catch (error) {
+            next(error);
+        }
     }
 };
 
