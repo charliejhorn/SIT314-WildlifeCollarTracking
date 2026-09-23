@@ -28,7 +28,7 @@ export function connectDatabase(): Promise<void> {
 export async function getCollarIds(): Promise<string[]> {
     const collars = await collarsColl.find({}, { projection: { _id: 1 } }).toArray();
     return collars
-        .map((collar) => collar._id as unknown as string);
+    .map((collar) => String(collar._id));
 }
 
 export async function getCollarStates(collarIds: string[]): Promise<CollarState[]> {
@@ -42,6 +42,11 @@ export async function saveCollarState(state: CollarState): Promise<void> {
         state,
         { upsert: true }
     );
+}
+
+export async function closeDatabase(): Promise<void> {
+    await client.close();
+    connection = undefined;
 }
 
 function isCollarState(value: unknown): value is CollarState {
