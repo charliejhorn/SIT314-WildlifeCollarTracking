@@ -3,8 +3,7 @@ import type { Document } from 'mongodb';
 import { animalColl } from '../config/database.js';
 
 export interface Animal {
-    id?: number,
-    collar_id?: number;
+    id?: number;
     name: string;
     species: string;
     birth_date: number;
@@ -36,14 +35,8 @@ const animalModel = {
         return result;
     },
 
-    async findByCollarId(collar_id: string): Promise<Document | null> {
-        const query = { collar_id: collar_id };
-        const result = await animalColl.findOne(query);
-        return result;
-    },
-
-    async findSpeciesOfCollar(collar_id: string): Promise<string | null> {
-        const query = { collar_id: collar_id };
+    async findSpeciesOfAnimal(animal_id: string): Promise<string | null> {
+        const query = { _id: new ObjectId(animal_id) };
         const result = await animalColl.findOne(query, { projection: { species: 1 } });
         return result ? result.species : null;
     }
