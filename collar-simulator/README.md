@@ -10,3 +10,5 @@ npm run build
 npm start
 npm run simulate-gps
 ```
+
+Set `SIMULATOR_COLLAR_COUNT` to control how many temporary collars an instance creates. Each instance assigns its collars to randomly selected existing animals and deletes them when the `stop` terminal command is entered.

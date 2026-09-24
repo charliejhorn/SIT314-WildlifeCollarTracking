@@ -1,7 +1,6 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
-import type { CollarState } from '../types.js';
+import { MongoClient, ObjectId, ServerApiVersion, type ObjectId as MongoObjectId } from 'mongodb';
 
-const uri = `mongodb+srv://${process.env.MONGODB_USR}:${process.env.MONGODB_PWD}@cluster0.rqoc04r.mongodb.net/?appName=Cluster0`
+const uri = `mongodb+srv://${process.env.MONGODB_USR}:${process.env.MONGODB_PWD}@cluster0.rqoc04r.mongodb.net/?appName=Cluster0`;
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -12,8 +11,8 @@ const client = new MongoClient(uri, {
 });
 
 const db = client.db('sit314-project');
-export const sensorDataColl = db.collection('dev_collar_states');
-export const collarsColl = db.collection('collars');
+const animalColl = db.collection('animals');
+const collarsColl = db.collection('collars');
 
 let connection: Promise<void> | undefined;
 
@@ -25,46 +24,30 @@ export function connectDatabase(): Promise<void> {
     return connection;
 }
 
-export async function getCollarIds(): Promise<string[]> {
-    const collars = await collarsColl.find({}, { projection: { _id: 1 } }).toArray();
-    return collars
-    .map((collar) => String(collar._id));
+export async function getAnimalIds(): Promise<MongoObjectId[]> {
+    const animals = await animalColl.find({}, { projection: { _id: 1 } }).toArray();
+    return animals.map((animal) => animal._id);
 }
 
-export async function getCollarStates(collarIds: string[]): Promise<CollarState[]> {
-    const states = await sensorDataColl.find({ collar_id: { $in: collarIds } }).toArray();
-    return states.filter(isCollarState) as unknown as CollarState[];
+export async function createTestCollars(animalIds: MongoObjectId[], count: number): Promise<string[]> {
+    if (animalIds.length === 0) {
+        throw new Error('cannot create test collars because no animals exist');
+    }
+
+    const collars = Array.from({ length: count }, () => ({
+        animal_id: animalIds[Math.floor(Math.random() * animalIds.length)]
+    }));
+    const result = await collarsColl.insertMany(collars);
+    return Object.values(result.insertedIds).map((collarId) => collarId.toString());
 }
 
-export async function saveCollarState(state: CollarState): Promise<void> {
-    await sensorDataColl.replaceOne(
-        { collar_id: state.collar_id },
-        state,
-        { upsert: true }
-    );
+export async function deleteTestCollars(collarIds: string[]): Promise<void> {
+    await collarsColl.deleteMany({
+        _id: { $in: collarIds.map((collarId) => new ObjectId(collarId)) }
+    });
 }
 
 export async function closeDatabase(): Promise<void> {
     await client.close();
     connection = undefined;
-}
-
-function isCollarState(value: unknown): value is CollarState {
-    if (typeof value !== 'object' || value === null) {
-        return false;
-    }
-
-    const state = value as Partial<CollarState>;
-    return typeof state.collar_id === 'string'
-        && typeof state.home?.lat === 'number'
-        && typeof state.home?.lon === 'number'
-        && typeof state.pos?.lat === 'number'
-        && typeof state.pos?.lon === 'number'
-        && typeof state.heading === 'number'
-        && typeof state.activity === 'string'
-        && typeof state.motionLevel === 'number'
-        && typeof state.speed === 'number'
-        && typeof state.heartRateBase === 'number'
-        && typeof state.bodyTempBase === 'number'
-        && typeof state.nextSendAt === 'number';
 }

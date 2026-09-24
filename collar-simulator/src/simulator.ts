@@ -6,7 +6,13 @@ import { generateVitals } from './vitals.js';
 import { buildPayload } from './payload.js';
 import { closeMqttClient, publishMessage } from './mqttClient.js';
 import type { CollarState } from './types.js';
-import { closeDatabase, connectDatabase, getCollarIds, getCollarStates, saveCollarState } from './config/database.js';
+import { closeDatabase, connectDatabase, createTestCollars, deleteTestCollars, getAnimalIds } from './config/database.js';
+
+const COLLAR_COUNT = Number.parseInt(process.env.SIMULATOR_COLLAR_COUNT ?? '10', 10);
+
+if (!Number.isInteger(COLLAR_COUNT) || COLLAR_COUNT < 1) {
+    throw new Error('SIMULATOR_COLLAR_COUNT must be a positive integer');
+}
 
 export interface SimulatorController {
     getStatus(): number;
@@ -15,11 +21,9 @@ export interface SimulatorController {
 
 export async function startSimulator(): Promise<SimulatorController> {
     await connectDatabase();
-    const collarIds = await getCollarIds();
-    console.log("Found collar IDs:", collarIds);
-    const storedStates = await getCollarStates(collarIds);
-    const statesByCollarId = new Map(storedStates.map((state) => [state.collar_id, state]));
-    const collars = collarIds.map((collarId) => statesByCollarId.get(collarId) ?? createInitialCollarState(collarId));
+    const animalIds = await getAnimalIds();
+    const collarIds = await createTestCollars(animalIds, COLLAR_COUNT);
+    const collars = collarIds.map((collarId) => createInitialCollarState(collarId));
     const timers = new Set<NodeJS.Timeout>();
     const inFlightTicks = new Set<Promise<void>>();
     let stopped = false;
@@ -81,10 +85,10 @@ export async function startSimulator(): Promise<SimulatorController> {
             }
             timers.clear();
             await Promise.all(inFlightTicks);
-            await Promise.all(collars.map((collar) => saveCollarState(collar)));
+            await deleteTestCollars(collarIds);
             await closeMqttClient();
             await closeDatabase();
-            console.log(`saved ${collars.length} collar state(s) and stopped simulation`);
+            console.log(`deleted ${collars.length} test collar(s) and stopped simulation`);
         })();
 
         return stopPromise;
