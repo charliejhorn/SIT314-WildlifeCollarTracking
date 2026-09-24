@@ -1,5 +1,6 @@
 export interface SensorData {
-    posix_time: number;
+    generated_posix_ms: number;
+    received_posix_ms: number;
     collar_id: string;
     gps: Record<string, unknown>;
     vitals: Record<string, unknown>;

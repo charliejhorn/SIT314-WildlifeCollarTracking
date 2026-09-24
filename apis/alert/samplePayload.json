@@ -1,5 +1,6 @@
 {
-    "posix_time": "1789093158",
+    "generated_posix_ms": "1789093158000",
+    "received_posix_ms": "1789093158000",
     "collar_id": "12321",
     "species": "lion",
     "gps": {

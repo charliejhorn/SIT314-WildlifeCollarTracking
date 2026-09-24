@@ -9,7 +9,10 @@ const alertController = {
     async ingestReading(req: Request, res: Response, next: NextFunction) {
         try {
             // console.log('Received request body:', req.body);
-            const sensorData: EnrichedSensorData = req.body as unknown as EnrichedSensorData;
+            const sensorData: EnrichedSensorData = {
+                ...(req.body as Omit<EnrichedSensorData, 'received_posix_ms'>),
+                received_posix_ms: Date.now()
+            };
 
             // console.log('Received sensor data:', sensorData);
             // return res.status(200).json({ message: 'Sensor data received successfully' });

@@ -17,7 +17,7 @@ async function evaluate(reading: EnrichedSensorData): Promise<RuleResult> {
             details: {}
         };
         const position = readCoordinates(reading.gps);
-        const readingTime = Number(reading.posix_time);
+        const readingTime = Number(reading.generated_posix_ms);
         const existingState = await collarMovementStateModel.find(reading.collar_id);
         let state = existingState;
         if (!state) {
@@ -28,7 +28,7 @@ async function evaluate(reading: EnrichedSensorData): Promise<RuleResult> {
         await collarMovementStateModel.save(state);
         const thresholdHours = getNoMovementThreshold(reading.species);
         if (thresholdHours === undefined) return result;
-        const hoursSinceMovement = (Date.now() / 1000 - state.last_moved_time) / 3600;
+        const hoursSinceMovement = (Date.now() - state.last_moved_time) / (1000 * 60 * 60);
         result.violating = hoursSinceMovement > thresholdHours;
         result.details = { hours_since_movement: hoursSinceMovement, threshold_hours: thresholdHours };
         return result;
