@@ -61,7 +61,7 @@ export interface Vitals {
 }
 
 export interface Payload {
-    posix_time: number;
+    generated_posix_ms: number;
     collar_id: string;
     seq: number;
     gps: GpsReading;

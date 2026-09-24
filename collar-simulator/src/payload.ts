@@ -8,7 +8,7 @@ export function buildPayload(
     seq = 0
 ): Payload {
     return {
-        posix_time: Math.floor(Date.now() / 1000),
+        generated_posix_ms: Date.now(),
         collar_id: collar.collar_id,
         seq,
         gps,
