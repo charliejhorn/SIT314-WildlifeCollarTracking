@@ -13,6 +13,7 @@ export function createCollarStates(collarsConfig: CollarConfig[]): CollarState[]
 export function createInitialCollarState(collarId: string, home = createRandomHome()): CollarState {
     return {
         collar_id: collarId,
+        readingsPublished: 0,
         home: { ...home },
         pos: { ...home },
         heading: Math.random() * (Math.PI * 2),

@@ -5,8 +5,6 @@ import type { Payload } from './types.js';
 
 const brokerUrl = process.env.MQTT_BROKER_URL || 'broker.hivemq.com';
 const brokerPort = Number(process.env.MQTT_PORT || 1883);
-const topic = process.env.MQTT_TOPIC || 'betula/collar-simulator/data';
-
 let client: MqttClient | null = null;
 let connectPromise: Promise<MqttClient> | null = null;
 
@@ -15,7 +13,7 @@ function getClient(): Promise<MqttClient> {
         return Promise.resolve(client);
     }
 
-    const connectedClient = mqtt.connect(`mqtts://${brokerUrl}:${brokerPort}`, {
+    const connectedClient = mqtt.connect(`mqtt://${brokerUrl}:${brokerPort}`, {
         clientId: process.env.MQTT_CLIENT_ID || `collar-sim-${Date.now()}`,
         username: process.env.MQTT_USERNAME,
         password: process.env.MQTT_PASSWORD,
@@ -45,11 +43,15 @@ function getClient(): Promise<MqttClient> {
     return connectPromise;
 }
 
-export async function publishMessage(payload: Payload | string): Promise<void> {
+export async function publishMessage(
+    payload: Payload | string,
+    topic = process.env.MQTT_TOPIC || 'betula/collar-simulator/data'
+): Promise<void> {
     const mqttClient = await getClient();
+    const message = typeof payload === 'string' ? payload : JSON.stringify(payload);
 
     return new Promise((resolve, reject) => {
-        mqttClient.publish(topic, JSON.stringify(payload), { qos: 0, retain: false }, (error) => {
+        mqttClient.publish(topic, message, { qos: 0, retain: false }, (error) => {
             if (error) {
                 reject(error);
                 return;

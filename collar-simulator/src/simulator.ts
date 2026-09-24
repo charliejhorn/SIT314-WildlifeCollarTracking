@@ -7,8 +7,12 @@ import { buildPayload } from './payload.js';
 import { closeMqttClient, publishMessage } from './mqttClient.js';
 import type { CollarState } from './types.js';
 import { closeDatabase, connectDatabase, createTestCollars, deleteTestCollars, getAnimalIds } from './config/database.js';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 const COLLAR_COUNT = Number.parseInt(process.env.SIMULATOR_COLLAR_COUNT ?? '10', 10);
+const DATA_TOPIC = process.env.MQTT_TOPIC || 'betula/collar-simulator/data';
+const SUMMARY_TOPIC = process.env.MQTT_SUMMARY_TOPIC || 'betula/collar-simulator/summary';
 
 if (!Number.isInteger(COLLAR_COUNT) || COLLAR_COUNT < 1) {
     throw new Error('SIMULATOR_COLLAR_COUNT must be a positive integer');
@@ -60,9 +64,10 @@ export async function startSimulator(): Promise<SimulatorController> {
             const gps = updateGps(collar, behavior);
             const accelerometer = generateAccelerometerData(collar, behavior);
             const vitals = generateVitals(collar, behavior);
-            const payload = buildPayload(collar, gps, vitals, accelerometer);
+            const payload = buildPayload(collar, gps, vitals, accelerometer, collar.readingsPublished);
 
-            await publishMessage(payload);
+            await publishMessage(payload, DATA_TOPIC);
+            collar.readingsPublished += 1;
             console.log(`published collar ${collar.collar_id} to MQTT`);
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
@@ -85,10 +90,27 @@ export async function startSimulator(): Promise<SimulatorController> {
             }
             timers.clear();
             await Promise.all(inFlightTicks);
+
+            const summary = {
+                readings_per_collar: Object.fromEntries(
+                    collars.map((collar) => [collar.collar_id, collar.readingsPublished])
+                ),
+                total_readings: collars.reduce((total, collar) => total + collar.readingsPublished, 0)
+            };
+            const logDirectory = join(process.cwd(), 'log');
+            const summaryJson = JSON.stringify(summary, null, 2);
+            const summaryPath = join(
+                logDirectory,
+                `readings-${Math.floor(Date.now() / 1000)}-${collars.length}.json`
+            );
+
+            await mkdir(logDirectory, { recursive: true });
+            await writeFile(summaryPath, `${summaryJson}\n`, 'utf8');
+            await publishMessage(summaryJson, SUMMARY_TOPIC);
             await deleteTestCollars(collarIds);
             await closeMqttClient();
             await closeDatabase();
-            console.log(`deleted ${collars.length} test collar(s) and stopped simulation`);
+            console.log(`wrote ${summaryPath}, published shutdown summary, and deleted ${collars.length} test collar(s)`);
         })();
 
         return stopPromise;

@@ -12,6 +12,7 @@ export interface CollarConfig {
 
 export interface CollarState {
     collar_id: string;
+    readingsPublished: number;
     home: Position & { rangeRadius?: number };
     pos: Position;
     heading: number;
@@ -62,6 +63,7 @@ export interface Vitals {
 export interface Payload {
     posix_time: number;
     collar_id: string;
+    seq: number;
     gps: GpsReading;
     vitals: Vitals;
     accelerometer: AccelerometerData;
