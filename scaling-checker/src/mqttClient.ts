@@ -1,0 +1,126 @@
+import mqtt from 'mqtt';
+import 'dotenv/config';
+import type { MqttClient } from 'mqtt';
+import type { Payload } from './types.js';
+
+const brokerUrl = process.env.MQTT_BROKER_URL || 'broker.hivemq.com';
+const brokerPort = Number(process.env.MQTT_PORT || 1883);
+let client: MqttClient | null = null;
+let connectPromise: Promise<MqttClient> | null = null;
+
+function getClient(): Promise<MqttClient> {
+    if (client) {
+        return Promise.resolve(client);
+    }
+
+    const connectedClient = mqtt.connect(`mqtt://${brokerUrl}:${brokerPort}`, {
+        clientId: process.env.MQTT_MONITOR_CLIENT_ID || `scaling-checker-${Date.now()}`,
+        username: process.env.MQTT_USERNAME,
+        password: process.env.MQTT_PASSWORD,
+        keepalive: 60,
+        reconnectPeriod: 5_000,
+        resubscribe: true,
+        clean: true,
+        rejectUnauthorized: true
+    });
+    client = connectedClient;
+
+    connectPromise = new Promise((resolve, reject) => {
+        const onConnect = () => {
+            connectedClient.removeListener('error', onError);
+            console.log(`Connected to MQTT broker at ${brokerUrl}:${brokerPort}`);
+            resolve(connectedClient);
+        };
+
+        const onError = (error: Error) => {
+            connectedClient.removeListener('connect', onConnect);
+            console.error("Error connecting to MQTT client.")
+            reject(error);
+        };
+
+        connectedClient.once('connect', onConnect);
+        connectedClient.once('error', onError);
+        connectedClient.on('reconnect', () => console.log('reconnecting to MQTT broker'));
+        connectedClient.on('offline', () => console.log('MQTT client is offline'));
+        connectedClient.on('close', () => console.log('MQTT connection closed'));
+        connectedClient.on('error', (error) => console.error('MQTT client error:', error.message));
+    });
+
+    return connectPromise;
+}
+
+export async function publishMessage(
+    payload: Payload | string,
+    topic = process.env.MQTT_TOPIC || 'collar-simulator/data'
+): Promise<void> {
+    const mqttClient = await getClient();
+    const message = typeof payload === 'string' ? payload : JSON.stringify(payload);
+
+    return new Promise((resolve, reject) => {
+        mqttClient.publish(topic, message, { qos: 0, retain: false }, (error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+export async function subscribeToTopic(
+    topic: string,
+    onMessage: (topic: string, message: Buffer) => void
+): Promise<void> {
+    const mqttClient = await getClient();
+    mqttClient.on('message', onMessage);
+
+    await new Promise<void>((resolve, reject) => {
+        mqttClient.subscribe(topic, { qos: 0 }, (error) => {
+            if (error) {
+                mqttClient.removeListener('message', onMessage);
+                reject(error);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+export async function subscribeToTopics(
+    topics: string[],
+    onMessage: (topic: string, message: Buffer) => void
+): Promise<void> {
+    const mqttClient = await getClient();
+    mqttClient.on('message', onMessage);
+
+    await new Promise<void>((resolve, reject) => {
+        mqttClient.subscribe(topics, { qos: 0 }, (error) => {
+            if (error) {
+                mqttClient.removeListener('message', onMessage);
+                reject(error);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+export async function closeMqttClient(): Promise<void> {
+    if (!client) {
+        return;
+    }
+
+    const mqttClient = client;
+    client = null;
+    connectPromise = null;
+
+    await new Promise<void>((resolve, reject) => {
+        mqttClient.end(false, (error?: Error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve();
+        });
+    });
+}

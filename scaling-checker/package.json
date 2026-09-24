@@ -1,0 +1,25 @@
+{
+    "name": "scaling-checker",
+    "version": "1.0.0",
+    "description": "Checks for data loss and measures throughput in the IoT system",
+    "license": "MIT",
+    "author": "Charlie Horn",
+    "type": "module",
+    "main": "src/index.ts",
+    "scripts": {
+        "start": "tsx src/index.ts",
+        "monitor": "tsx src/index.ts monitor",
+        "metrics": "tsx src/index.ts metrics",
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "tsx": "^4.19.2",
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "mongodb": "^7.6.0",
+        "mqtt": "^5.10.0"
+    }
+}
