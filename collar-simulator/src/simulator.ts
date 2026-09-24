@@ -11,8 +11,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const COLLAR_COUNT = Number.parseInt(process.env.SIMULATOR_COLLAR_COUNT ?? '10', 10);
-const DATA_TOPIC = process.env.MQTT_TOPIC || 'betula/collar-simulator/data';
-const SUMMARY_TOPIC = process.env.MQTT_SUMMARY_TOPIC || 'betula/collar-simulator/summary';
+const DATA_TOPIC = process.env.MQTT_TOPIC || 'collar-simulator/data';
+const LOGGER_TOPIC = process.env.MQTT_LOGGER_TOPIC || 'logger';
 
 if (!Number.isInteger(COLLAR_COUNT) || COLLAR_COUNT < 1) {
     throw new Error('SIMULATOR_COLLAR_COUNT must be a positive integer');
@@ -106,7 +106,7 @@ export async function startSimulator(): Promise<SimulatorController> {
 
             await mkdir(logDirectory, { recursive: true });
             await writeFile(summaryPath, `${summaryJson}\n`, 'utf8');
-            await publishMessage(summaryJson, SUMMARY_TOPIC);
+            await publishMessage(summaryJson, LOGGER_TOPIC);
             await deleteTestCollars(collarIds);
             await closeMqttClient();
             await closeDatabase();
