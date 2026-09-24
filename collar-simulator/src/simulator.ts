@@ -19,7 +19,6 @@ if (!Number.isInteger(COLLAR_COUNT) || COLLAR_COUNT < 1) {
 }
 
 export interface SimulatorController {
-    getStatus(): number;
     stop(): Promise<void>;
 }
 
@@ -117,7 +116,6 @@ export async function startSimulator(): Promise<SimulatorController> {
     }
 
     return {
-        getStatus: () => collars.length,
         stop
     };
 }

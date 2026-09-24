@@ -11,6 +11,6 @@ npm start
 npm run simulate-gps
 ```
 
-Set `SIMULATOR_COLLAR_COUNT` to control how many temporary collars an instance creates. Each instance assigns its collars to randomly selected existing animals and deletes them when the `stop` terminal command is entered.
+Set `SIMULATOR_COLLAR_COUNT` to control how many temporary collars an instance creates. Each instance assigns its collars to randomly selected existing animals and deletes them during graceful shutdown.
 
 Set `MQTT_TOPIC` for sensor readings and `MQTT_SUMMARY_TOPIC` for the shutdown reading summary. Summaries are also written to `log/readings-<posix_time>-<num_collars>.json` with per-collar counts and the simulator total.
