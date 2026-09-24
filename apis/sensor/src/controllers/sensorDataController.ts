@@ -5,7 +5,7 @@ const sensorDataController = {
     async createSensorData(req: Request, res: Response, next: NextFunction) {
         try {
             // validation happens here
-            const { posix_time, collar_id, gps, vitals, accelerometer } = req.body;
+            const { posix_time, collar_id, gps, vitals, accelerometer, seq } = req.body;
 
             if (!posix_time || !collar_id || !gps || !vitals || !accelerometer) {
                 return res.status(400).json({ 
@@ -53,9 +53,10 @@ const sensorDataController = {
                     }
                 }
             }
+            const received_posix_time = Date.now();
 
             // data access happens in the model
-            const sensorData: SensorData = { posix_time, collar_id, gps, vitals, accelerometer };
+            const sensorData: SensorData = { generated_posix_time: posix_time, received_posix_time, collar_id, gps, vitals, accelerometer, seq: seq || 9999999 };
             const insertedId = await sensorDataModel.create(sensorData);
 
             res.status(201).json({ id: insertedId, ...sensorData });

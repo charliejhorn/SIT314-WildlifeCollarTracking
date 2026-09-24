@@ -2,11 +2,13 @@ import type { ObjectId } from 'mongodb';
 import { sensorDataColl } from '../config/database.js';
 
 export interface SensorData {
-    posix_time: number;
-    collar_id: string;
+    generated_posix_time: number;
+    received_posix_time: number;
+    collar_id: number;
     gps: Record<string, unknown>;
     vitals: Record<string, unknown>;
     accelerometer: Record<string, unknown>;
+    seq: number;
 }
 
 const sensorDataModel = {
@@ -14,6 +16,7 @@ const sensorDataModel = {
         const result = await sensorDataColl.insertOne(sensorData);
         return result.insertedId;
     },
+
     async findByCollarId(collar_id: string): Promise<SensorData[]> {
         return await sensorDataColl
             .find<SensorData>({ collar_id: parseInt(collar_id) })

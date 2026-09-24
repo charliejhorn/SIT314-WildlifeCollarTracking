@@ -22,4 +22,4 @@ async function testConnection(): Promise<void> {
 void testConnection();
 
 const db = client.db('sit314-project');
-export const sensorDataColl = db.collection('sensor-data');
+export const sensorDataColl = db.collection('sensor_data');
