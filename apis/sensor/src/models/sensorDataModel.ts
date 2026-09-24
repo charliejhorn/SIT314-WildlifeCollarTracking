@@ -2,8 +2,8 @@ import type { ObjectId } from 'mongodb';
 import { sensorDataColl } from '../config/database.js';
 
 export interface SensorData {
-    generated_posix_time: number;
-    received_posix_time: number;
+    generated_posix_ms: number;
+    received_posix_ms: number;
     collar_id: number;
     gps: Record<string, unknown>;
     vitals: Record<string, unknown>;

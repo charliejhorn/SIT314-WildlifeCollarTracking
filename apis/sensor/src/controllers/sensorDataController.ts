@@ -5,9 +5,9 @@ const sensorDataController = {
     async createSensorData(req: Request, res: Response, next: NextFunction) {
         try {
             // validation happens here
-            const { posix_time, collar_id, gps, vitals, accelerometer, seq } = req.body;
+            const { generated_posix_ms, collar_id, gps, vitals, accelerometer, seq } = req.body;
 
-            if (!posix_time || !collar_id || !gps || !vitals || !accelerometer) {
+            if (!generated_posix_ms || !collar_id || !gps || !vitals || !accelerometer) {
                 return res.status(400).json({ 
                     error: 'Missing required fields' 
                 });
@@ -53,10 +53,10 @@ const sensorDataController = {
                     }
                 }
             }
-            const received_posix_time = Date.now();
+            const received_posix_ms = Date.now();
 
             // data access happens in the model
-            const sensorData: SensorData = { generated_posix_time: posix_time, received_posix_time, collar_id, gps, vitals, accelerometer, seq: seq || 9999999 };
+            const sensorData: SensorData = { generated_posix_ms, received_posix_ms, collar_id, gps, vitals, accelerometer, seq: (seq == undefined ? 9999999 : seq) };
             const insertedId = await sensorDataModel.create(sensorData);
 
             res.status(201).json({ id: insertedId, ...sensorData });
