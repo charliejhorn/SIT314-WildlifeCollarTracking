@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import type { Document } from 'mongodb';
-import { collarColl } from '../config/database.js';
+import { collarsColl } from '../config/database.js';
 
 export interface Collar {
     id?: number,
@@ -10,23 +10,23 @@ export interface Collar {
 
 const collarModel = {
     async create(collar: Collar): Promise<ObjectId> {
-        const result = await collarColl.insertOne(collar);
+        const result = await collarsColl.insertOne(collar);
         return result.insertedId;
     },
 
     async find(id: string): Promise<Document | null> {
         const query = { _id: new ObjectId(id) };
-        const result = await collarColl.findOne(query);
+        const result = await collarsColl.findOne(query);
         return result;
     },
 
     async findAll(): Promise<Document[]> {
-        const result = await collarColl.find().toArray();
+        const result = await collarsColl.find().toArray();
         return result;
     },
 
     async update(id: string, updates: Partial<Collar>): Promise<Document | null> {
-        const result = await collarColl.findOneAndUpdate(
+        const result = await collarsColl.findOneAndUpdate(
             { _id: new ObjectId(id) },
             { $set: updates },  // Only updates provided fields
             { returnDocument: 'after' }
